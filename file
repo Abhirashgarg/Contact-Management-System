@@ -1,0 +1,124 @@
+import os
+
+class Contact:
+    def __init__(self, name, phone_number, email):
+        self.name = name
+        self.phone_number = phone_number
+        self.email = email
+
+    def __str__(self):
+        return f"Name: {self.name}\nPhone Number: {self.phone_number}\nEmail: {self.email}"
+
+class ContactManagementSystem:
+    def __init__(self, filename):
+        self.contacts = {}
+        self.filename = filename
+        self.load_contacts()
+
+    def load_contacts(self):
+        try:
+            with open(self.filename, 'r') as file:
+                for line in file:
+                    name, phone_number, email = line.strip().split(',')
+                    self.contacts[name] = Contact(name, phone_number, email)
+        except FileNotFoundError:
+            pass
+        os.system('cls')
+
+    def save_contacts(self):
+        with open(self.filename, 'w') as file:
+            for contact in self.contacts.values():
+                file.write(f"{contact.name},{contact.phone_number},{contact.email}\n")
+        os.system('cls')    
+
+    def add_contact(self, name, phone_number, email):
+        if name in self.contacts:
+            print("Contact already exists.")
+            return
+        self.contacts[name] = Contact(name, phone_number, email)
+        self.save_contacts()
+        print("Contact added successfully.")
+        os.system('cls')
+
+    def search_contact(self, name):
+        if name in self.contacts:
+            print("Contact found.")
+            print(self.contacts[name])
+        else:
+            print("Contact not found.")
+        os.system('cls')
+
+    def update_contact(self, name=None, phone_number=None, email=None):
+        if name in self.contacts:
+            self.contacts[name].name = name
+            if phone_number:
+              self.contacts[name].phone_number = phone_number
+            if email:
+              self.contacts[name].email = email
+
+        self.save_contacts()
+        print("Contact updated successfully.")        
+        os.system('cls')
+
+    def delete_contact(self, name):
+        if name in self.contacts:
+            del self.contacts[name]
+            self.save_contacts()
+            print("Contact deleted successfully.")
+        else:
+            print("Contact not found.")
+        os.system('cls')
+
+    def list_contacts(self):
+        if not self.contacts:
+            print("No contacts found.")
+        else:
+            for contact in self.contacts.values():
+                print(f"Name: {contact.name}, Phone: {contact.phone_number}, Email: {contact.email}")
+        os.system('cls')
+
+def main():
+    filename = 'contacts.txt'
+    cms = ContactManagementSystem(filename)
+
+    while True:
+        print("\nContact Management System")
+        print("1. Add Contact")
+        print("2. Search Contact")
+        print("3. Update Contact")
+        print("4. Delete Contact")
+        print("5. List Contacts")
+        print("6. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            name = input("Enter name: ")
+            phone_number = input("Enter phone number: ")
+            email = input("Enter email: ")
+            cms.add_contact(name, phone_number, email)
+        elif choice == '2':
+            name = input("Enter name: ")
+            cms.search_contact(name)
+        elif choice == '3':
+            name = input("Enter name: ")
+            if name in cms.contacts:
+                print("Contact found.")                
+                phone_number = input("Enter new phone number (press enter to skip): ")
+                email = input("Enter new email (press enter to skip): ")
+                cms.update_contact(name, phone_number or None, email or None)
+            else:
+                print("Contact not found.")
+        elif choice == '4':
+            name = input("Enter name: ")
+            cms.delete_contact(name)
+        elif choice == '5':
+            cms.list_contacts()
+        elif choice == '6':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == '__main__':
+    main()
